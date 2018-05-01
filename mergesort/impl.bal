@@ -17,20 +17,79 @@
 import ballerina/io;
 
 documentation {
-    Returns sorted array of int after performing merge sort.
+    Returns sorted int array after performing merge sort.
 
-    P{{unsortedArray}} The unsorted array of int
-    R{{}} Sorted array
+    P{{unsortedArray}} The unsorted int array
+    R{{}} The sorted int array
 }
-public function mergeSort(int[] unsortedArray) returns int[] {
-    return sort(unsortedArray, 0, lengthof unsortedArray);
-
+public function mergeSort(int[] unsortedArray) returns @untainted int[] {
+    sort(unsortedArray, 0, lengthof unsortedArray-1);
+    return unsortedArray;
 }
 
-function sort(int[] unsortedArray, int startIndex, int endIndex) returns int[] {
+function sort(int[] arr, int startIndex, int endIndex) returns @untainted () {
 
-    int[] abc;
-    return abc;
+    if (startIndex < endIndex) {
+        //find middle index
+        int middleIndex = (startIndex + endIndex) / 2;
+
+        //sort first half
+        sort(arr, startIndex, middleIndex);
+
+        //sort last half
+        sort(arr, middleIndex + 1, endIndex);
+
+        //merge sorted halves
+        merge(arr, startIndex, middleIndex, endIndex);
+    }
+    return;
 }
+
+function merge(int[] arr, int startIndex, int middleIndex, int endIndex) {
+
+    int subArray1Size = middleIndex - startIndex + 1;
+    int subArray2Size = endIndex - middleIndex;
+
+    //create temp array
+    int[] leftArray = [subArray1Size];
+    int[] rightArray = [subArray2Size];
+
+    //Copy data to temp
+    foreach i in [0..subArray1Size-1] {
+        leftArray[i] = arr[startIndex + i];
+    }
+
+    foreach j in [0..subArray2Size-1] {
+        rightArray[j] = arr[middleIndex + 1 + j];
+    }
+
+    int i=0;
+    int j = 0;
+
+    int k = startIndex;
+    while (i < subArray1Size && j < subArray2Size) {
+        if (leftArray[i] <= rightArray[j]) {
+            arr[k] = leftArray[i];
+            i = i +1;
+        } else {
+            arr[k] = rightArray[j];
+            j = j +1;
+        }
+        k = k + 1;
+    }
+
+    while(i < subArray1Size) {
+        arr[k] = leftArray[i];
+        i = i +1;
+        k = k + 1;
+    }
+
+    while(j < subArray2Size) {
+        arr[k] = rightArray[j];
+        j = j +1;
+        k = k + 1;
+    }
+}
+
 
 
